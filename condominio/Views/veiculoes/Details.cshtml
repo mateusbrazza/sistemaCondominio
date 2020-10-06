@@ -1,0 +1,74 @@
+﻿@model condominio.Models.veiculo
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>veiculo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.placa)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.placa)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.numApartamento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.numApartamento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.bloco)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.bloco)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.cor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.cor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.marca)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marca)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.modelo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.modelo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.nome_image)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.nome_image)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
