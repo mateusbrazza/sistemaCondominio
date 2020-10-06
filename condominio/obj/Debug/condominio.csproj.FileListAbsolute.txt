@@ -87,3 +87,5 @@ C:\condominio\condominio\obj\Debug\condominio.csproj.CoreCompileInputs.cache
 C:\condominio\condominio\obj\Debug\condominio.csproj.CopyComplete
 C:\condominio\condominio\obj\Debug\condominio.dll
 C:\condominio\condominio\obj\Debug\condominio.pdb
+C:\SistemaCondominio\condominio\obj\Debug\condominio.dll
+C:\SistemaCondominio\condominio\obj\Debug\condominio.pdb
