@@ -20,6 +20,7 @@ namespace condominio.Models
         public string nomeEmergencia { get; set; }
         public string telefoneEmergencia { get; set; }
         public string nome_image { get; set; }
+        public string text { get; set; }
 
     }
 }

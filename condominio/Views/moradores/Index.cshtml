@@ -9,79 +9,87 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.nome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.numApartamento)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.bloco)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.telefone1)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.telefone2)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.observacao)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.nomeEmergencia)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.telefoneEmergencia)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.nome_image)
-        </th>
-        <th></th>
-    </tr>
+<div class="col-md-8 mb-30">
+    <form class="form-inline my-2 my-lg" id="formSearch" method="get" asp-action="Index">
+        <input class="form-control mr-sm-8 md-10" id="searching" value="@ViewData["nomeget"]" name="search" placeholder="Nome ou Numero do ap" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+</div>
+    <br>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.numApartamento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bloco)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.telefone1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.telefone2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.observacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nomeEmergencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.telefoneEmergencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nome_image)
+            </th>
+            <th></th>
+        </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.nome)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.numApartamento)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.bloco)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.telefone1)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.telefone2)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.observacao)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.nomeEmergencia)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.telefoneEmergencia)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.nome_image)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
-        </td>
-    </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.numApartamento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.bloco)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.telefone1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.telefone2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.observacao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.nomeEmergencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.telefoneEmergencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.nome_image)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.id })
+                </td>
+            </tr>
+        }
 
-</table>
+    </table>

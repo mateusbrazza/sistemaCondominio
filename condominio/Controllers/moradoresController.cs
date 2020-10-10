@@ -4,9 +4,12 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using condominio.Models;
+using FormFactory;
+using Microsoft.Ajax.Utilities;
 
 namespace condominio.Controllers
 {
@@ -17,8 +20,24 @@ namespace condominio.Controllers
         // GET: moradores
         public ActionResult Index()
         {
-            return View(db.Moradors.ToList());
+           return View(db.Moradors.ToList());
         }
+
+        [HttpGet]
+        public async Task<ActionResult> Index(string search)
+        {
+            ViewData["nomeget"] = search;
+
+            var textquery = from x in db.Moradors select x;
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                textquery = textquery.Where(x => x.nome.Contains(search) || x.numApartamento.Contains(search));
+            }
+            return View(await textquery.AsNoTracking().ToListAsync());
+        }
+
+
 
         // GET: moradores/Details/5
         public ActionResult Details(int? id)
@@ -123,5 +142,16 @@ namespace condominio.Controllers
             }
             base.Dispose(disposing);
         }
+
+
+    ///
+ 
+
+
+
+
+
+
+
     }
 }
