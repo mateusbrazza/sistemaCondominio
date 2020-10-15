@@ -7,6 +7,9 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using condominio.Models;
+using System.IO;
+using System.Threading.Tasks;
+
 
 namespace condominio.Controllers
 {
@@ -18,6 +21,19 @@ namespace condominio.Controllers
         public ActionResult Index()
         {
             return View(db.Funcionarios.ToList());
+        }
+        [HttpGet]
+        public async Task<ActionResult> Index(string search)
+        {
+            ViewData["nomeget"] = search;
+
+            var textquery = from x in db.Funcionarios select x;
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                textquery = textquery.Where(x => x.nome.Contains(search) || x.numApartamento.Contains(search));
+            }
+            return View(await textquery.AsNoTracking().ToListAsync());
         }
 
         // GET: funcionarios/Details/5
@@ -46,10 +62,18 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,nome,rg,cpf,numApartamento,bloco,telefone,observacao,nome_image")] funcionario funcionario)
+        public ActionResult Create( funcionario funcionario)
         {
+
+
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(funcionario.Imagemfile.FileName);
+                string extension = Path.GetExtension(funcionario.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                funcionario.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                funcionario.Imagemfile.SaveAs(fileName);
                 db.Funcionarios.Add(funcionario);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -78,10 +102,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,nome,rg,cpf,numApartamento,bloco,telefone,observacao,nome_image")] funcionario funcionario)
+        public ActionResult Edit( funcionario funcionario)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(funcionario.Imagemfile.FileName);
+                string extension = Path.GetExtension(funcionario.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                funcionario.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                funcionario.Imagemfile.SaveAs(fileName);
                 db.Entry(funcionario).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

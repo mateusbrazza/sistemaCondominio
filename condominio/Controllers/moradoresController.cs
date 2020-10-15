@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using condominio.Models;
 using FormFactory;
 using Microsoft.Ajax.Utilities;
+using System.IO;
 
 namespace condominio.Controllers
 {
@@ -65,10 +66,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,nome,numApartamento,bloco,telefone1,telefone2,email,observacao,nomeEmergencia,telefoneEmergencia,nome_image")] moradores moradores)
+        public ActionResult Create( moradores moradores)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(moradores.Imagemfile.FileName);
+                string extension = Path.GetExtension(moradores.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                moradores.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                moradores.Imagemfile.SaveAs(fileName);
                 db.Moradors.Add(moradores);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -97,10 +104,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,nome,numApartamento,bloco,telefone1,telefone2,email,observacao,nomeEmergencia,telefoneEmergencia,nome_image")] moradores moradores)
+        public ActionResult Edit( moradores moradores)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(moradores.Imagemfile.FileName);
+                string extension = Path.GetExtension(moradores.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                moradores.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                moradores.Imagemfile.SaveAs(fileName);
                 db.Entry(moradores).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

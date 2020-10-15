@@ -4,11 +4,17 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Visistantes</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Cadastro", "Create")
 </p>
+<div class="col-md-8 mb-30">
+    <form class="form-inline my-2 my-lg" id="formSearch" method="get" asp-action="Index">
+        <input class="form-control mr-sm-8 md-10" id="searching" value="@ViewData["nomeget"]" name="search" placeholder="Nome ou Numero do ap" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+    </form>
+</div>
 <table class="table">
     <tr>
         <th>
@@ -56,12 +62,35 @@
             @Html.DisplayFor(modelItem => item.observacao)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.nome_image)
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Imagem
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Imagem</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="@Html.DisplayFor(modelItem => item.nome_image)" width="400px" height="300px" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @Html.ActionLink("Editar", "Edit", new { id=item.id }) |
+            @Html.ActionLink("Detalhes", "Details", new { id=item.id }) |
+            @Html.ActionLink("Deletar", "Delete", new { id=item.id })
         </td>
     </tr>
 }

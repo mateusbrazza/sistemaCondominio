@@ -4,9 +4,13 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using condominio.Models;
+using FormFactory;
+using Microsoft.Ajax.Utilities;
+using System.IO;
 
 namespace condominio.Controllers
 {
@@ -19,6 +23,20 @@ namespace condominio.Controllers
         {
             return View(db.visistantes.ToList());
         }
+        [HttpGet]
+        public async Task<ActionResult> Index(string search)
+        {
+            ViewData["nomeget"] = search;
+
+            var textquery = from x in db.visistantes select x;
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                textquery = textquery.Where(x => x.nome.Contains(search) || x.numApartamento.Contains(search));
+            }
+            return View(await textquery.AsNoTracking().ToListAsync());
+        }
+
 
         // GET: visistantes/Details/5
         public ActionResult Details(int? id)
@@ -46,10 +64,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,nome,numApartamento,bloco,telefone1,telefone2,observacao,nome_image")] visistante visistante)
+        public ActionResult Create( visistante visistante)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(visistante.Imagemfile.FileName);
+                string extension = Path.GetExtension(visistante.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                visistante.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                visistante.Imagemfile.SaveAs(fileName);
                 db.visistantes.Add(visistante);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -78,10 +102,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,nome,numApartamento,bloco,telefone1,telefone2,observacao,nome_image")] visistante visistante)
+        public ActionResult Edit( visistante visistante)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(visistante.Imagemfile.FileName);
+                string extension = Path.GetExtension(visistante.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                visistante.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                visistante.Imagemfile.SaveAs(fileName);
                 db.Entry(visistante).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

@@ -4,9 +4,13 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using condominio.Models;
+using FormFactory;
+using Microsoft.Ajax.Utilities;
+using System.IO;
 
 namespace condominio.Controllers
 {
@@ -18,6 +22,20 @@ namespace condominio.Controllers
         public ActionResult Index()
         {
             return View(db.veiculos.ToList());
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Index(string search)
+        {
+            ViewData["nomeget"] = search;
+
+            var textquery = from x in db.veiculos select x;
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                textquery = textquery.Where(x => x.numApartamento.Contains(search) || x.placa.Contains(search));
+            }
+            return View(await textquery.AsNoTracking().ToListAsync());
         }
 
         // GET: veiculoes/Details/5
@@ -46,10 +64,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,placa,numApartamento,bloco,cor,marca,modelo,nome_image")] veiculo veiculo)
+        public ActionResult Create( veiculo veiculo)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(veiculo.Imagemfile.FileName);
+                string extension = Path.GetExtension(veiculo.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                veiculo.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                veiculo.Imagemfile.SaveAs(fileName);
                 db.veiculos.Add(veiculo);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -78,10 +102,16 @@ namespace condominio.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,placa,numApartamento,bloco,cor,marca,modelo,nome_image")] veiculo veiculo)
+        public ActionResult Edit( veiculo veiculo)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(veiculo.Imagemfile.FileName);
+                string extension = Path.GetExtension(veiculo.Imagemfile.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                veiculo.nome_image = "Image/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/Image/"), fileName);
+                veiculo.Imagemfile.SaveAs(fileName);
                 db.Entry(veiculo).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
