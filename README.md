@@ -1,70 +1,76 @@
 # SistemaCondominio
-
-
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ServerWebExchange;
+import com.fasterxml.jackson.databind.JsonNode;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MyClassTest {
-
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpSession session;
-    @Mock
-    private PfAgentlessHelper pfAgentlessHelper;
-    @Mock
-    private HybridFlowRedirectToClientService hybridFlowRedirectToClientService;
+public class MqdConsentServiceTest {
 
     @InjectMocks
-    private MyClass myClass;
+    private MqdConsentService mqdConsentService;
+
+    @Mock
+    private ServerWebExchange exchange;
+
+    @Mock
+    private JsonNode responseBody;
+
+    @Mock
+    private ConsentResponseOB consentResponse;
 
     @Before
-    public void setUp() {
-        when(request.getSession()).thenReturn(session);
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testDenyRequest() throws Exception {
-        // Mock session attributes
-        when(session.getAttribute("SESSION_REDIRECT_BASE_URL")).thenReturn("http://base.url/");
-        when(session.getAttribute("SESSION_DROPOFF_ENDPOINT")).thenReturn("http://dropoff.url/");
-        when(session.getAttribute("CLIENT_LOGO_URL")).thenReturn("http://logo.url/");
-        when(session.getAttribute("DEFINITION_ID")).thenReturn("someDefinitionId");
-        when(session.getAttribute("HANDOFF")).thenReturn(false);
-        ReferenceResponse pickupObject = mock(ReferenceResponse.class);
-        when(session.getAttribute("SESSION_LAST_PICKUP_RESULT")).thenReturn(pickupObject);
-        Customer customer = mock(Customer.class);
-        when(session.getAttribute("CUSTOMER")).thenReturn(customer);
-        ConsentDirectory consentDirectory = mock(ConsentDirectory.class);
-        when(session.getAttribute("CONSENT_DIRECTORY")).thenReturn(consentDirectory);
+    public void testProcessConsentRequest_ValidGetRequest() throws Exception {
+        // Arrange: Configurando um Exchange para ter a URI e método corretos
+        when(exchange.getOriginalRequestUri()).thenReturn("/consents");
+        when(exchange.getRequest().getMethod()).thenReturn(HttpMethod.GET);
+        when(mqdConsentService.getResponseBody(exchange)).thenReturn(responseBody);
         
-        String resumePath = "/resume";
+        // Act: Chamando o método que queremos testar
+        mqdConsentService.processConsentRequest(exchange);
         
-        // Mock method calls
-        when(pfAgentlessHelper.dropoffRef(anyString(), any(JSONObject.class))).thenReturn("refId");
+        // Assert: Verificando se o processamento foi feito corretamente
+        verify(mqdConsentService).sendConsentData(any(JsonNode.class), eq(exchange));
+        verify(log).info(contains("Feature Toggle is enabled. Sending consent data."));
+    }
 
-        // Call the method
-        String result = myClass.denyRequest(request, resumePath);
+    @Test
+    public void testProcessConsentRequest_NotAGetRequest() {
+        // Arrange: Configurando um Exchange para ter uma URI incorreta ou método diferente de GET
+        when(exchange.getOriginalRequestUri()).thenReturn("/consents");
+        when(exchange.getRequest().getMethod()).thenReturn(HttpMethod.POST);
+        
+        // Act: Chamando o método
+        mqdConsentService.processConsentRequest(exchange);
+        
+        // Assert: Verificando que a mensagem de pulo foi logada e o método não fez nada
+        verify(log).info(contains("Skipping processing"));
+        verify(mqdConsentService, never()).sendConsentData(any(JsonNode.class), eq(exchange));
+    }
 
-        // Verify interactions and assertions
-        verify(session).setAttribute("DECISION_FLAG_ALLOW", false);
-        verify(session).setAttribute("CLIENT_LOGO_URL", "http://logo.url/");
-        verify(session).setAttribute("REFRESH_URL", "http://base.url/resume?ref=refId");
+    @Test
+    public void testProcessConsentRequest_ThrowsException() throws Exception {
+        // Arrange: Forçando uma exceção ao processar o request
+        when(exchange.getOriginalRequestUri()).thenReturn("/consents");
+        when(exchange.getRequest().getMethod()).thenReturn(HttpMethod.GET);
+        when(mqdConsentService.getResponseBody(exchange)).thenThrow(new IOException("Test exception"));
 
-        assertThat(result, is(ModalDenyRedirectEnum.getModal("someDefinitionId")));
+        // Act
+        try {
+            mqdConsentService.processConsentRequest(exchange);
+        } catch (Exception e) {
+            // Assert: Verifica se o log de erro foi chamado
+            verify(log).error(contains("Error processing consent request"));
+        }
     }
 }
 
